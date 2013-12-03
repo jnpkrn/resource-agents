@@ -326,48 +326,46 @@
                 <xsl:value-of select="$NL"/>
 
                 <xsl:for-each select="parameters/parameter">
-                    <xsl:choose>
-                        <xsl:when test="@required = '1' or @primary = '1'">
-                            <!-- attribute name=... rha:description=... -->
-                            <xsl:call-template name="tag">
-                                <xsl:with-param name="name" select="'attribute'"/>
-                                <xsl:with-param name="attrs" select="concat(
-                                    'name=',            $Q, @name,                      $Q, $SP,
-                                    'rha:description=', $Q, normalize-space(shortdesc), $Q)"/>
-                                <xsl:with-param name="indented"
-                                                select="concat($global-init-indent,
-                                                               $global-indent,
-                                                               $global-indent,
-                                                               $global-indent)"/>
-                            </xsl:call-template>
-                            <xsl:value-of select="$NL"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <!-- optional (start) -->
-                            <xsl:call-template name="tag-start">
-                                <xsl:with-param name="name" select="'optional'"/>
-                                <xsl:with-param name="indented"
-                                                select="concat($global-init-indent,
-                                                               $global-indent,
-                                                               $global-indent,
-                                                               $global-indent)"/>
-                            </xsl:call-template>
-                            <xsl:value-of select="$NL"/>
+                    <xsl:variable name="use-indented"
+                                  select="concat($global-init-indent,
+                                                 $global-indent,
+                                                 $global-indent,
+                                                 $global-indent,
+                                                 substring($global-indent, 1,
+                                                           number(not(@required = '1'
+                                                                      or @primary = '1')) * 64))"/>
+                    <xsl:if test="$use-indented != concat($global-init-indent,
+                                                          $global-indent,
+                                                          $global-indent,
+                                                          $global-indent)">
 
-                                <!-- attribute name=... rha:description=... -->
-                                <xsl:call-template name="tag">
-                                    <xsl:with-param name="name" select="'attribute'"/>
-                                    <xsl:with-param name="attrs" select="concat(
-                                        'name=',            $Q, @name,                      $Q, $SP,
-                                        'rha:description=', $Q, normalize-space(shortdesc), $Q)"/>
-                                    <xsl:with-param name="indented"
-                                                    select="concat($global-init-indent,
-                                                                   $global-indent,
-                                                                   $global-indent,
-                                                                   $global-indent,
-                                                                   $global-indent)"/>
-                                </xsl:call-template>
-                                <xsl:value-of select="$NL"/>
+                        <!-- optional (start) -->
+                        <xsl:call-template name="tag-start">
+                            <xsl:with-param name="name" select="'optional'"/>
+                            <xsl:with-param name="indented"
+                                            select="concat($global-init-indent,
+                                                           $global-indent,
+                                                           $global-indent,
+                                                           $global-indent)"/>
+                        </xsl:call-template>
+                        <xsl:value-of select="$NL"/>
+
+                    </xsl:if>
+
+                    <!-- attribute name=... rha:description=... -->
+                    <xsl:call-template name="tag">
+                        <xsl:with-param name="name" select="'attribute'"/>
+                        <xsl:with-param name="attrs" select="concat(
+                            'name=',            $Q, @name,                      $Q, $SP,
+                            'rha:description=', $Q, normalize-space(shortdesc), $Q)"/>
+                        <xsl:with-param name="indented" select="$use-indented"/>
+                    </xsl:call-template>
+                    <xsl:value-of select="$NL"/>
+
+                    <xsl:if test="$use-indented != concat($global-init-indent,
+                                                          $global-indent,
+                                                          $global-indent,
+                                                          $global-indent)">
 
                             <!-- optional (end) -->
                             <xsl:call-template name="tag-end">
@@ -379,8 +377,8 @@
                                                                $global-indent)"/>
                             </xsl:call-template>
                             <xsl:value-of select="$NL"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
+
+                    </xsl:if>
                 </xsl:for-each>
 
                 <!-- group (end) -->
