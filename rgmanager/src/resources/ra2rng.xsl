@@ -69,6 +69,19 @@
 
 <int:agent-parameter-specialization>
     <!-- int:agent @name="..." > int:parameter @name="..." > PATTERN -->
+    <!-- SCRIPT -->
+    <int:agent name="script">
+        <int:parameter name="file">
+            <data type="token">
+                <except>
+                    <data type="token">
+                        <!-- disallow cluster to control its own core services through a "script" RA -->
+                        <param name="pattern">/etc/(rc\.d/)?init\.d/(cman|rgmanager)(\s.*|)</param>
+                    </data>
+                </except>
+            </data>
+        </int:parameter>
+    </int:agent>
 </int:agent-parameter-specialization>
 
 <xsl:variable name="SP" select="' '"/>
