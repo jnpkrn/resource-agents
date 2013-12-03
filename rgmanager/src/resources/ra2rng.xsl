@@ -67,6 +67,10 @@
     </choice>
 </int:common-optional-parameters>
 
+<int:agent-parameter-specialization>
+    <!-- int:agent @name="..." > int:parameter @name="..." > PATTERN -->
+</int:agent-parameter-specialization>
+
 <xsl:variable name="SP" select="' '"/>
 <xsl:variable name="NL" select="'&#xA;'"/>
 <xsl:variable name="NLNL" select="'&#xA;&#xA;'"/>
@@ -359,6 +363,13 @@
                             'name=',            $Q, @name,                      $Q, $SP,
                             'rha:description=', $Q, normalize-space(shortdesc), $Q)"/>
                         <xsl:with-param name="indented" select="$use-indented"/>
+                        <xsl:with-param name="fill-with"
+                                        select="document('')/*/int:agent-parameter-specialization
+                                                /int:agent[
+                                                    @name = current()/../../@name
+                                                ]/int:parameter[
+                                                    @name = current()/@name
+                                                ]/*"/>
                     </xsl:call-template>
                     <xsl:value-of select="$NL"/>
 
