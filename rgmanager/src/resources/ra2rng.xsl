@@ -1,6 +1,7 @@
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:int="__internal__"
+    xmlns:rha="http://redhat.com/~pkennedy/annotation_namespace/cluster_conf_annot_namespace"
     exclude-result-prefixes="int">
     <xsl:output method="text" indent="no"/>
 
@@ -13,39 +14,24 @@
   -->
 
 <int:common-optional-parameters>
-    <int:parameter name="__independent_subtree">
-        <int:shortdesc>
-            Treat this and all children as an independent subtree.
-        </int:shortdesc>
-    </int:parameter>
-    <int:parameter name="__enforce_timeouts">
-        <int:shortdesc>
-            Consider a timeout for operations as fatal.
-        </int:shortdesc>
-    </int:parameter>
-    <int:parameter name="__max_failures">
-        <int:shortdesc>
-            Maximum number of failures before returning a failure to
-            a status check.
-        </int:shortdesc>
-    </int:parameter>
-    <int:parameter name="__failure_expire_time">
-        <int:shortdesc>
-            Amount of time before a failure is forgotten.
-        </int:shortdesc>
-    </int:parameter>
-    <int:parameter name="__max_restarts">
-        <int:shortdesc>
-            Maximum number restarts for an independent subtree before
-            giving up.
-        </int:shortdesc>
-    </int:parameter>
-    <int:parameter name="__restart_expire_time">
-        <int:shortdesc>
-            Amount of time before a failure is forgotten for
-            an independent subtree.
-        </int:shortdesc>
-    </int:parameter>
+    <optional>
+        <attribute name="__independent_subtree" rha:description="Treat this and all children as an independent subtree."/>
+    </optional>
+    <optional>
+        <attribute name="__enforce_timeouts" rha:description="Consider a timeout for operations as fatal."/>
+    </optional>
+    <optional>
+        <attribute name="__max_failures" rha:description="Maximum number of failures before returning a failure to a status check."/>
+    </optional>
+    <optional>
+        <attribute name="__failure_expire_time" rha:description="Amount of time before a failure is forgotten."/>
+    </optional>
+    <optional>
+        <attribute name="__max_restarts" rha:description="Maximum number restarts for an independent subtree before giving up."/>
+    </optional>
+    <optional>
+        <attribute name="__restart_expire_time" rha:description="Amount of time before a failure is forgotten for an independent subtree."/>
+    </optional>
 </int:common-optional-parameters>
 
 <xsl:variable name="SP" select="' '"/>
@@ -381,40 +367,13 @@
                                 select="concat($global-init-indent,
                                                $global-indent)"/>
             </xsl:call-template>
-            <xsl:value-of select="$NL"/>
 
-            <xsl:for-each select="document('')/*/int:common-optional-parameters/int:parameter">
-                <!-- optional (start) -->
-                <xsl:call-template name="tag-start">
-                    <xsl:with-param name="name" select="'optional'"/>
-                    <xsl:with-param name="indented"
-                                    select="concat($global-init-indent,
-                                                   $global-indent)"/>
-                </xsl:call-template>
-                <xsl:value-of select="$NL"/>
-
-                    <!-- attribute name=... rha:description=... -->
-                    <xsl:call-template name="tag">
-                        <xsl:with-param name="name" select="'attribute'"/>
-                        <xsl:with-param name="attrs" select="concat(
-                            'name=',            $Q, @name,                          $Q, $SP,
-                            'rha:description=', $Q, normalize-space(int:shortdesc), $Q)"/>
-                        <xsl:with-param name="indented"
-                                        select="concat($global-init-indent,
-                                                       $global-indent,
-                                                       $global-indent)"/>
-                    </xsl:call-template>
-                    <xsl:value-of select="$NL"/>
-
-                <!-- optional (end) -->
-                <xsl:call-template name="tag-end">
-                    <xsl:with-param name="name" select="'optional'"/>
-                    <xsl:with-param name="indented"
-                                    select="concat($global-init-indent,
-                                                   $global-indent)"/>
-                </xsl:call-template>
-                <xsl:value-of select="$NL"/>
-            </xsl:for-each>
+            <!-- "paste" int:common-optional-parameters from above here -->
+            <xsl:call-template name="pretty-print">
+                <xsl:with-param name="indented" select="$global-init-indent"/>
+                <xsl:with-param name="fill-with"
+                                select="document('')/*/int:common-optional-parameters/*"/>
+            </xsl:call-template>
 
             <!-- optional (start) -->
             <xsl:call-template name="tag-start">
