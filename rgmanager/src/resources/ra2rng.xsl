@@ -155,8 +155,11 @@
                 </xsl:call-template>
             </xsl:when>
             <xsl:when test="self::*">
-                <xsl:if test="count($fill-with/*) &lt; 2
-                              or count(preceding-sibling::*) = 0">
+                <xsl:if test="count(preceding-sibling::*) = 0
+                              or
+                                  (preceding-sibling::node()[comment() or *])[last()]
+                                  !=
+                                  preceding-sibling::*[last()]">
                     <xsl:value-of select="$NL"/>
                 </xsl:if>
                 <xsl:call-template name="tag">
@@ -427,7 +430,7 @@
             <xsl:call-template name="pretty-print">
                 <xsl:with-param name="indented" select="$global-init-indent"/>
                 <xsl:with-param name="fill-with"
-                                select="document('')/*/int:common-optional-parameters/*"/>
+                                select="document('')/*/int:common-optional-parameters/node()"/>
             </xsl:call-template>
 
             <!-- optional (start) -->
