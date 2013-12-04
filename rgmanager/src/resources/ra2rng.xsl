@@ -15,6 +15,73 @@
 
 <int:agent-parameter-specialization>
     <!-- int:agent @name="..." > int:parameter @name="..." > PATTERN -->
+    <!-- IP -->
+    <int:agent name="ip">
+        <int:parameter name="address">
+            <data type="token">
+                <!-- only approximate regexp -->
+                <param name="pattern">[0-9A-Fa-f.:]+([/][0-9]+)?</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="family">
+            <choice>
+                <!-- note: "auto" is more like original expectation, but
+                     enforce it to prevent arbitrary non-senses in this
+                     context like uppercased INET6 -->
+                <value type="token">auto</value>
+                <value type="token">inet</value>
+                <value type="token">inet6</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="monitor_link">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="string">0</value>
+                <value type="string">1</value>
+                <value type="string">no</value>
+                <value type="string">yes</value>
+                <value type="string">off</value>
+                <value type="string">on</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="nfslock">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="string">0</value>
+                <value type="string">1</value>
+                <value type="string">no</value>
+                <value type="string">yes</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="sleeptime">
+            <data type="int">
+                <param name="minInclusive">0</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="disable_rdisc">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="string">0</value>
+                <value type="string">1</value>
+                <value type="string">no</value>
+                <value type="string">yes</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="prefer_interface">
+            <data type="string">
+                <!-- note: can be up to max(IFNAMSIZ,IFALIASZ) - 1 characters
+                     where from include/linux/if.h IFNAMSIZ = 16, IFALIASZ = 256
+                     and the terminating null character is subtracted:
+                     http://www.gnu.org/software/libc/manual/html_node/Interface-Naming.html
+                     resulting in 255 characters (at least one has to be given,
+                     at least it would be a bit insane to have an interface
+                     called "") -->
+                <param name="minLength">1</param>
+                <param name="maxLength">255</param>
+                <param name="pattern">[\p{IsBasicLatin}\p{IsLatin-1Supplement}-[\s]]+</param>
+            </data>
+        </int:parameter>
+    </int:agent>
     <!-- SCRIPT -->
     <int:agent name="script">
         <int:parameter name="file">
