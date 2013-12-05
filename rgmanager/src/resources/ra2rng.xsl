@@ -204,6 +204,46 @@
             </data>
         </int:parameter>
     </int:agent>
+    <!-- MYSQL -->
+    <int:agent name="mysql">
+        <!-- int:parameter name="name"/ -->
+        <int:parameter name="config_file">
+            <data type="string">
+                <!-- only enforce starting with slash and at the very least
+                     one non-zero length component (otherwise not sane);
+                     maximum path length is as per PATH_MAX - 1 (4095)
+                     from /usr/include/linux/limits.h; spaces allowed -->
+                <param name="pattern">/[\p{IsBasicLatin}\p{IsLatin-1Supplement}]+</param>
+                <param name="maxLength">4095</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="listen_address">
+            <data type="string">
+                <!-- can be either IP (v4 only?) address or a hostname;
+                     as per netware/mysqld_safe.c limited by PATH_MAX -->
+                <param name="pattern">[\p{IsBasicLatin}\p{IsLatin-1Supplement}-[\s]]+</param>
+                <param name="maxLength">4095</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="mysqld_options">
+            <data type="token">
+                <!-- let's limit it at least by $(getconf ARG_MAX) - 1 bytes -->
+                <param name="pattern">[\p{IsBasicLatin}\p{IsLatin-1Supplement}]+</param>
+                <param name="maxLength">2621440</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="startup_wait">
+            <data type="int">
+                <param name="minInclusive">0</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="shutdown_wait">
+            <data type="int">
+                <param name="minInclusive">0</param>
+            </data>
+        </int:parameter>
+        <!-- int:parameter name="service_name"/ -->
+    </int:agent>
 </int:agent-parameter-specialization>
 
 <xsl:variable name="SP" select="' '"/>
