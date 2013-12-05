@@ -15,6 +15,119 @@
 
 <int:agent-parameter-specialization>
     <!-- int:agent @name="..." > int:parameter @name="..." > PATTERN -->
+    <!-- FS -->
+    <int:agent name="fs">
+        <!-- int:parameter name="name"/ -->
+        <int:parameter name="mountpoint">
+            <data type="string">
+                <!-- only enforce starting with slash and at the very least
+                     one non-zero length component (otherwise not sane);
+                     maximum path length is as per PATH_MAX - 1 (4095)
+                     from /usr/include/linux/limits.h -->
+                <param name="pattern">/[\p{IsBasicLatin}\p{IsLatin-1Supplement}-[\s]]+</param>
+                <param name="maxLength">4095</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="device">
+            <data type="string">
+                <!-- like mountpoint + can be specified by UUID=XYZ
+                     or LABEL=XYZ -->
+                <param name="pattern">/[\p{IsBasicLatin}\p{IsLatin-1Supplement}-[\s]]+|(UUID|LABEL)=[\p{IsBasicLatin}\p{IsLatin-1Supplement}]+</param>
+                <param name="maxLength">4095</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="fstype">
+            <data type="token">
+                <!-- fs.sh only checks for cifs, nfs and nfs4;
+                     length of 31 is a reasonable overapproximation -->
+                <param name="pattern">[\p{IsBasicLatin}\p{IsLatin-1Supplement}-[\s]]+</param>
+                <param name="maxLength">31</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="force_unmount">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="token">0</value>
+                <value type="token">1</value>
+                <value type="token">no</value>
+                <value type="token">yes</value>
+                <value type="token">false</value>
+                <value type="token">true</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="quick_status">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="string">0</value>
+                <value type="string">1</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="self_fence">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="token">0</value>
+                <value type="token">1</value>
+                <value type="token">no</value>
+                <value type="token">yes</value>
+                <value type="token">false</value>
+                <value type="token">true</value>
+                <value type="token">off</value>
+                <value type="token">on</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="nfslock">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="string">0</value>
+                <value type="string">1</value>
+                <value type="string">no</value>
+                <value type="string">yes</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="nfsrestart">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="string">0</value>
+                <value type="string">1</value>
+                <value type="string">no</value>
+                <value type="string">yes</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="fsid">
+            <data type="string">
+                <!-- prevent from whitespace breaking fragile handling -->
+                <param name="pattern">\S+</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="force_fsck">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="string">0</value>
+                <value type="string">1</value>
+                <value type="string">no</value>
+                <value type="string">yes</value>
+            </choice>
+        </int:parameter>
+        <int:parameter name="options">
+            <data type="string">
+                <!-- prevent from whitespace breaking fragile handling -->
+                <param name="pattern">\S*</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="use_findmnt">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="token">0</value>
+                <value type="token">1</value>
+                <value type="token">no</value>
+                <value type="token">yes</value>
+                <value type="token">false</value>
+                <value type="token">true</value>
+                <value type="token">off</value>
+                <value type="token">on</value>
+            </choice>
+        </int:parameter>
+    </int:agent>
     <!-- IP -->
     <int:agent name="ip">
         <int:parameter name="address">
