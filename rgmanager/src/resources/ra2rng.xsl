@@ -26,6 +26,44 @@
                 <value type="string">yes</value>
             </choice>
         </int:parameter>
+        <int:parameter name="shutdown_wait">
+            <data type="int">
+                <param name="minInclusive">0</param>
+            </data>
+        </int:parameter>
+    </int:agent>
+    <!-- APACHE (should be named, e.g., httpd, not as per foundation) -->
+    <int:agent name="apache">
+        <!-- int:parameter name="name"/ -->
+        <int:parameter name="server_root">
+            <data type="string">
+                <!-- only enforce starting with slash and at the very least
+                     one non-zero length component (otherwise not sane);
+                     maximum path length is as per PATH_MAX - 1 (4095)
+                     from /usr/include/linux/limits.h; spaces allowed -->
+                <param name="pattern">/[\p{IsBasicLatin}\p{IsLatin-1Supplement}]+</param>
+                <param name="maxLength">4095</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="config_file">
+            <data type="string">
+                <!-- only enforce, at the very least, one non-zero length
+                     component (otherwise not sane);
+                     maximum path length is as per PATH_MAX - 1 (4095)
+                     from /usr/include/linux/limits.h; spaces allowed -->
+                <param name="pattern">[\p{IsBasicLatin}\p{IsLatin-1Supplement}]+</param>
+                <param name="maxLength">4095</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="httpd_options">
+            <data type="token">
+                <!-- let's limit it at least by $(getconf ARG_MAX) - 1 bytes -->
+                <param name="pattern">[\p{IsBasicLatin}\p{IsLatin-1Supplement}]+</param>
+                <param name="maxLength">2621440</param>
+            </data>
+        </int:parameter>
+        <!-- shutdown_wait: see WILDCARD -->
+        <!-- int:parameter name="service_name"/ -->
     </int:agent>
     <!-- FS -->
     <int:agent name="fs">
@@ -237,11 +275,7 @@
                 <param name="minInclusive">0</param>
             </data>
         </int:parameter>
-        <int:parameter name="shutdown_wait">
-            <data type="int">
-                <param name="minInclusive">0</param>
-            </data>
-        </int:parameter>
+        <!-- shutdown_wait: see WILDCARD -->
         <!-- int:parameter name="service_name"/ -->
     </int:agent>
 </int:agent-parameter-specialization>
