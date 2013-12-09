@@ -13,105 +13,6 @@
   helper definitions
   -->
 
-<int:common-optional-parameters>
-    <optional>
-        <attribute name="__independent_subtree" rha:description="Treat this and all children as an independent subtree.">
-            <data type="string">
-                <param name="pattern">\s*[12]\s*|[Yy][Ee][Ss]|[Nn][Oo][Nn]-[Cc][Rr][Ii][Tt][Ii][Cc][Aa][Ll]</param>
-            </data>
-        </attribute>
-    </optional>
-    <optional>
-        <attribute name="__enforce_timeouts" rha:description="Consider a timeout for operations as fatal.">
-            <data type="string">
-                <param name="pattern">\s*[1-9][0-9]*\s*|[Yy][Ee][Ss]</param>
-            </data>
-        </attribute>
-    </optional>
-
-    <!-- failures -->
-    <choice datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <!--
-            __max_failures and __failure_expire_time only make sense
-            when defined altogether and contain valid non-zero value
-          -->
-        <group>
-            <attribute name="__max_failures" rha:description="Maximum number of failures before returning a failure to a status check.">
-                <data type="int">
-                    <param name="minExclusive">0</param>
-                </data>
-            </attribute>
-            <attribute name="__failure_expire_time" rha:description="Amount of time before a failure is forgotten.">
-                <data type="string">
-                    <param name="pattern">.*[1-9][0-9]*([SsMmHhDdWwYy].*|)</param>
-                </data>
-            </attribute>
-        </group>
-        <group>
-            <optional>
-                <attribute name="__max_failures">
-                    <!-- while negative value is not a strict error as it is
-                         silently turned to zero, don't promote such a liberty
-                      -->
-                    <value type="int">0</value>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="__failure_expire_time">
-                    <data type="string">
-                        <except>
-                            <data type="string">
-                                <param name="pattern">.*[1-9][0-9]*([SsMmHhDdWwYy].*|)</param>
-                            </data>
-                        </except>
-                    </data>
-                </attribute>
-            </optional>
-        </group>
-    </choice>
-
-    <!-- restarts -->
-    <choice datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-        <!--
-            __max_restarts and __restart_expire_time only make sense
-            when defined altogether and contain valid non-zero value
-          -->
-        <group>
-            <attribute name="__max_restarts" rha:description="Maximum number restarts for an independent subtree before giving up.">
-                <data type="int">
-                    <param name="minExclusive">0</param>
-                </data>
-            </attribute>
-            <attribute name="__restart_expire_time" rha:description="Amount of time before a failure is forgotten for an independent subtree.">
-                <data type="string">
-                    <param name="pattern">.*[1-9][0-9]*([SsMmHhDdWwYy].*|)</param>
-                </data>
-            </attribute>
-        </group>
-        <group>
-            <optional>
-                <attribute name="__max_restarts">
-                    <!-- while negative value is not a strict error as it is
-                         silently turned to zero, don't promote such a liberty
-                      -->
-                    <value type="int">0</value>
-                </attribute>
-            </optional>
-            <optional>
-                <attribute name="__restart_expire_time">
-                    <data type="string">
-                        <except>
-                            <data type="string">
-                                <param name="pattern">.*[1-9][0-9]*([SsMmHhDdWwYy].*|)</param>
-                            </data>
-                        </except>
-                    </data>
-                </attribute>
-            </optional>
-        </group>
-    </choice>
-</int:common-optional-parameters>
-
 <int:agent-parameter-specialization>
     <!-- int:agent @name="..." > int:parameter @name="..." > PATTERN -->
     <!-- SCRIPT -->
@@ -470,13 +371,17 @@
                                 select="concat($global-init-indent,
                                                $global-indent)"/>
             </xsl:call-template>
+            <xsl:value-of select="$NL"/>
 
-            <!-- "paste" int:common-optional-parameters from above here -->
-            <xsl:call-template name="pretty-print">
-                <xsl:with-param name="indented" select="$global-init-indent"/>
-                <xsl:with-param name="fill-with"
-                                select="document('')/*/int:common-optional-parameters/node()"/>
+            <xsl:call-template name="tag">
+                <xsl:with-param name="name" select="'ref'"/>
+                <xsl:with-param name="attrs" select="concat(
+                    'name=', $Q, 'RESOURCECOMMONPARAMS', $Q)"/>
+                <xsl:with-param name="indented"
+                                select="concat($global-init-indent,
+                                               $global-indent)"/>
             </xsl:call-template>
+            <xsl:value-of select="$NL"/>
 
             <!-- optional (start) -->
             <xsl:call-template name="tag-start">
