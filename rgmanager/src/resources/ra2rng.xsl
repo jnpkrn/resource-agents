@@ -15,6 +15,18 @@
 
 <int:agent-parameter-specialization>
     <!-- int:agent @name="..." > int:parameter @name="..." > PATTERN -->
+    <!-- WILDCARD (any agent containing such parameter) -->
+    <int:agent name="*">
+        <int:parameter name="nfslock">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="string">0</value>
+                <value type="string">1</value>
+                <value type="string">no</value>
+                <value type="string">yes</value>
+            </choice>
+        </int:parameter>
+    </int:agent>
     <!-- FS -->
     <int:agent name="fs">
         <!-- int:parameter name="name"/ -->
@@ -75,15 +87,7 @@
                 <value type="token">on</value>
             </choice>
         </int:parameter>
-        <int:parameter name="nfslock">
-            <choice>
-                <!-- note: a bit stricter than what the code enforces -->
-                <value type="string">0</value>
-                <value type="string">1</value>
-                <value type="string">no</value>
-                <value type="string">yes</value>
-            </choice>
-        </int:parameter>
+        <!-- nfslock: see WILDCARD -->
         <int:parameter name="nfsrestart">
             <choice>
                 <!-- note: a bit stricter than what the code enforces -->
@@ -157,15 +161,7 @@
                 <value type="string">on</value>
             </choice>
         </int:parameter>
-        <int:parameter name="nfslock">
-            <choice>
-                <!-- note: a bit stricter than what the code enforces -->
-                <value type="string">0</value>
-                <value type="string">1</value>
-                <value type="string">no</value>
-                <value type="string">yes</value>
-            </choice>
-        </int:parameter>
+        <!-- nfslock: see WILDCARD -->
         <int:parameter name="sleeptime">
             <data type="int">
                 <param name="minInclusive">0</param>
@@ -506,12 +502,21 @@
                             'rha:description=', $Q, normalize-space(shortdesc), $Q)"/>
                         <xsl:with-param name="indented" select="$use-indented"/>
                         <xsl:with-param name="fill-with"
-                                        select="document('')/*/int:agent-parameter-specialization
-                                                /int:agent[
-                                                    @name = current()/../../@name
-                                                ]/int:parameter[
-                                                    @name = current()/@name
-                                                ]/*"/>
+                                        select="(
+                                                document('')/*/int:agent-parameter-specialization
+                                                    /int:agent[
+                                                        @name = '*'
+                                                    ]/int:parameter[
+                                                        @name = current()/@name
+                                                    ]
+                                                |
+                                                document('')/*/int:agent-parameter-specialization
+                                                    /int:agent[
+                                                        @name = current()/../../@name
+                                                    ]/int:parameter[
+                                                        @name = current()/@name
+                                                    ]
+                                                )[last()]/*"/>
                     </xsl:call-template>
                     <xsl:value-of select="$NL"/>
 
