@@ -26,6 +26,19 @@
                 <value type="string">yes</value>
             </choice>
         </int:parameter>
+        <int:parameter name="self_fence">
+            <choice>
+                <!-- note: a bit stricter than what the code enforces -->
+                <value type="token">0</value>
+                <value type="token">1</value>
+                <value type="token">no</value>
+                <value type="token">yes</value>
+                <value type="token">false</value>
+                <value type="token">true</value>
+                <value type="token">off</value>
+                <value type="token">on</value>
+            </choice>
+        </int:parameter>
         <int:parameter name="shutdown_wait">
             <data type="int">
                 <param name="minInclusive">0</param>
@@ -112,19 +125,7 @@
                 <value type="string">1</value>
             </choice>
         </int:parameter>
-        <int:parameter name="self_fence">
-            <choice>
-                <!-- note: a bit stricter than what the code enforces -->
-                <value type="token">0</value>
-                <value type="token">1</value>
-                <value type="token">no</value>
-                <value type="token">yes</value>
-                <value type="token">false</value>
-                <value type="token">true</value>
-                <value type="token">off</value>
-                <value type="token">on</value>
-            </choice>
-        </int:parameter>
+        <!-- self_fence: see WILDCARD -->
         <!-- nfslock: see WILDCARD -->
         <int:parameter name="nfsrestart">
             <choice>
@@ -228,6 +229,27 @@
                 <param name="pattern">[\p{IsBasicLatin}\p{IsLatin-1Supplement}-[\s]]+</param>
             </data>
         </int:parameter>
+    </int:agent>
+    <!-- LVM -->
+    <int:agent name="lvm">
+        <!-- int:parameter name="name"/ -->
+        <int:parameter name="vg_name">
+            <data type="string">
+                <!-- would be "token" unless single(?) use that breaks it -->
+                <!-- https://bugzilla.redhat.com/show_bug.cgi?id=747278#c6 -->
+                <param name="pattern">[\p{IsBasicLatin}\p{IsLatin-1Supplement}]+</param>
+                <param name="maxLength">63</param>
+            </data>
+        </int:parameter>
+        <int:parameter name="lv_name">
+            <data type="string">
+                <!-- https://bugzilla.redhat.com/show_bug.cgi?id=747278#c6 -->
+                <param name="pattern">[\p{IsBasicLatin}\p{IsLatin-1Supplement}]+</param>
+                <param name="maxLength">63</param>
+            </data>
+        </int:parameter>
+        <!-- self_fence: see WILDCARD -->
+        <!-- nfslock: see WILDCARD -->
     </int:agent>
     <!-- SCRIPT -->
     <int:agent name="script">
