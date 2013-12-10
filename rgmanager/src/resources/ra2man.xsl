@@ -124,7 +124,7 @@ all of its children also fails.
 <xsl:if test="special/@tag = 'rgmanager'">
 <xsl:if test="special/attributes/@maxinstances">
 .PP
-An instatnce of this resource defined in the
+An instance of this resource defined in the
 .B &lt;resources&gt;
 section of
 .B cluster.conf
