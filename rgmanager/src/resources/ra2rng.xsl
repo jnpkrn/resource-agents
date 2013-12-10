@@ -7,6 +7,7 @@
 
 <xsl:param name="global-init-indent" select="'  '"/>
 <xsl:param name="global-indent" select="'  '"/>
+<xsl:param name="global-ra-children-elem" select="'CHILDREN'"/>
 
 
 <!--
@@ -471,6 +472,10 @@
 <xsl:template match="/resource-agent">
     <xsl:value-of select="$NL"/>
 
+    <!--
+      first define per-RA element itself...
+      -->
+
     <!-- define name=... (start) -->
     <xsl:variable name="capitalized">
         <xsl:call-template name="capitalize">
@@ -666,18 +671,18 @@
 
             <!-- optional (start) -->
             <xsl:call-template name="tag-start">
-                <xsl:with-param name="name" select="'optional'"/>
+                <xsl:with-param name="name" select="'zeroOrMore'"/>
                 <xsl:with-param name="indented"
                                 select="concat($global-init-indent,
                                                $global-indent)"/>
             </xsl:call-template>
             <xsl:value-of select="$NL"/>
 
-                <!-- ref name="CHILDREN" -->
+                <!-- ref name="CHILDREN" (or equiv.) -->
                 <xsl:call-template name="tag">
                     <xsl:with-param name="name" select="'ref'"/>
                     <xsl:with-param name="attrs" select="concat(
-                        'name=', $Q, 'CHILDREN', $Q)"/>
+                        'name=', $Q, $global-ra-children-elem, $Q)"/>
                     <xsl:with-param name="indented"
                                     select="concat($global-init-indent,
                                                    $global-indent,
@@ -687,7 +692,7 @@
 
             <!-- optional (end) -->
             <xsl:call-template name="tag-end">
-                <xsl:with-param name="name" select="'optional'"/>
+                <xsl:with-param name="name" select="'zeroOrMore'"/>
                 <xsl:with-param name="indented"
                                 select="concat($global-init-indent,
                                                $global-indent)"/>
@@ -697,6 +702,35 @@
         <!-- element (end) -->
         <xsl:call-template name="tag-end">
             <xsl:with-param name="name" select="'element'"/>
+            <xsl:with-param name="indented"
+                            select="$global-init-indent"/>
+        </xsl:call-template>
+        <xsl:value-of select="$NL"/>
+
+    <!-- define (end) -->
+    <xsl:call-template name="tag-end">
+        <xsl:with-param name="name" select="'define'"/>
+    </xsl:call-template>
+    <xsl:value-of select="$NLNL"/>
+
+    <!--
+      ...then add a reference to such defined symbol to CHILDREN (or equiv.)
+      -->
+
+    <!-- define name="CHILDREN" (or equiv.; start) -->
+    <xsl:call-template name="tag-start">
+        <xsl:with-param name="name" select="'define'"/>
+        <xsl:with-param name="attrs" select="concat(
+            'name=',    $Q, $global-ra-children-elem, $Q, $SP,
+            'combine=', $Q, 'choice',                 $Q)"/>
+    </xsl:call-template>
+    <xsl:value-of select="$NL"/>
+
+        <!-- ref name="$capitalized" -->
+        <xsl:call-template name="tag">
+            <xsl:with-param name="name" select="'ref'"/>
+            <xsl:with-param name="attrs" select="concat(
+                'name=', $Q, $capitalized, $Q)"/>
             <xsl:with-param name="indented"
                             select="$global-init-indent"/>
         </xsl:call-template>
