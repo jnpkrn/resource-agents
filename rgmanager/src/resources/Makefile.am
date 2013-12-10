@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2004-2011 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2004-2013 Red Hat, Inc.  All rights reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -96,6 +96,12 @@ ras-validation: $(RESOURCES) $(TARGET) $(DTD)
 #
 # resources.rng.* should never be distributed by themselves.
 #
+# NOTE: resources.rng.mid and resources.rng.tail not joined for
+#       compatibility with obsolete 2-passes-logic of
+#       ccs_update_schema script from external cman package
+#
+# XXX: race-prone in parallel make
+#
 resources.rng: $(RESOURCES) $(TARGET) utils/config-utils.sh
 resources.rng: $(XSL) $(RESRNG)
 	rm -f resources.rng
@@ -106,11 +112,6 @@ resources.rng: $(XSL) $(RESRNG)
 		bash ./$$f meta-data | xsltproc ra2rng.xsl - >> resources.rng; \
 	done
 	cat resources.rng.mid >> resources.rng
-	@echo Generating per-resource RelaxNG reference information...
-	@for f in $(RESOURCES) $(TARGET); do \
-		echo "    ./$$f"; \
-		bash ./$$f meta-data | xsltproc ra2ref.xsl - >> resources.rng; \
-	done
 	cat resources.rng.tail >> resources.rng
 
 utils/config-utils.sh:
