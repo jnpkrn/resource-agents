@@ -173,8 +173,8 @@ do_metadata()
     </actions>
 
     <special tag="rgmanager">
-        <child type="nfsexport" forbid="1"/>
         <child type="nfsclient" forbid="1"/>
+        <child type="nfsexport" forbid="1"/>
     </special>
 </resource-agent>
 EOT

@@ -41,7 +41,7 @@ HELPERS			= ocf-shellfuncs svclib_nfslock \
 
 DTD			= ra-api-1-modified.dtd
 
-XSL			= ra2man.xsl ra2ref.xsl ra2rng.xsl
+XSL			= ra2man.xsl ra2ref.xsl ra2rng.xsl ra2rng-postprocess.xsl
 
 RESRNG			= resources.rng.head resources.rng.mid resources.rng.tail
 
@@ -99,20 +99,26 @@ ras-validation: $(RESOURCES) $(TARGET) $(DTD)
 # NOTE: resources.rng.mid and resources.rng.tail not joined for
 #       compatibility with obsolete 2-passes-logic of
 #       ccs_update_schema script from external cman package
+#       (new logic part behaves just like this recipe)
 #
 # XXX: race-prone in parallel make
 #
 resources.rng: $(RESOURCES) $(TARGET) utils/config-utils.sh
 resources.rng: $(XSL) $(RESRNG)
 	rm -f resources.rng
-	cat resources.rng.head >> resources.rng
 	@echo Generating per-resource RelaxNG information...
-	@for f in $(RESOURCES) $(TARGET); do \
-		echo "    ./$$f"; \
-		bash ./$$f meta-data | xsltproc ra2rng.xsl - >> resources.rng; \
-	done
-	cat resources.rng.mid >> resources.rng
-	cat resources.rng.tail >> resources.rng
+	cat resources.rng.head >> resources.rng
+	@{ echo '<rha:wrap xmlns:rha="http://redhat.com/~pkennedy/annotation_namespace/cluster_conf_annot_namespace">'; \
+	   for f in $(RESOURCES) $(TARGET); do \
+	      echo "    ./$$f" >&2; \
+	      bash ./$$f meta-data  | xsltproc ra2rng.xsl -; \
+	   done; \
+	   echo '</rha:wrap>'; } \
+	   | xsltproc ra2rng-postprocess.xsl - \
+	   | sed -e '/\s*<[\/]\?rha:wrap[^>]*>\s*/d' \
+	   >> resources.rng
+	sed -ne '/<\/rha:ignore>/bI;d;:I;n;p;bI' resources.rng.tail \
+		>> resources.rng
 
 utils/config-utils.sh:
 	make -C utils config-utils.sh
