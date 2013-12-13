@@ -489,6 +489,18 @@
     </xsl:call-template>
     <xsl:value-of select="$NL"/>
 
+        <xsl:for-each select="special[@tag='rgmanager']/child[@forbid='1']">
+            <xsl:call-template name="tag">
+                <xsl:with-param name="name" select="'rha:restriction'"/>
+                <xsl:with-param name="attrs" select="concat(
+                    'rha:type=',  $Q, 'forbid-childelem', $Q, $SP,
+                    'rha:value=', $Q, @type,              $Q)"/>
+                <xsl:with-param name="indented"
+                                select="$global-init-indent"/>
+            </xsl:call-template>
+            <xsl:value-of select="$NL"/>
+        </xsl:for-each>
+
         <!-- element name=... rha:description=... (start) -->
         <xsl:call-template name="tag-start">
             <xsl:with-param name="name" select="'element'"/>
