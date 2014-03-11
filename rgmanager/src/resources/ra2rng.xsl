@@ -46,6 +46,23 @@
             </data>
         </int:parameter>
     </int:agent>
+    <!-- FULL-FLEDGED SERVICE/VM -->
+    <int:agent name="service">
+        <int:parameter name="depend_mode">
+            <choice>
+                <value type="string">soft</value>
+                <value type="string">hard</value>
+            </choice>
+        </int:parameter>
+    </int:agent>
+    <int:agent name="vm">
+        <int:parameter name="depend_mode">
+            <choice>
+                <value type="string">soft</value>
+                <value type="string">hard</value>
+            </choice>
+        </int:parameter>
+    </int:agent>
     <!-- APACHE (should be named, e.g., httpd, not as per foundation) -->
     <int:agent name="apache">
         <!-- int:parameter name="name"/ -->
